@@ -33,24 +33,40 @@ def roll_dice_and_move(start_point, triangle_points):
 
 # Adjusted Animation function
 def update(frame, dot_size):
-    global current_point, dots
+    global current_point, dots, last_lines
     new_point = roll_dice_and_move(current_point, corner_points)
     
     # Create a new dot for each move
     dot, = ax.plot(new_point[0], new_point[1], 'bo', markersize=dot_size)
     dots.append(dot)
 
+    # Create a new line for each move and update the last 5 lines
+    if len(last_lines) >= 5:
+        last_lines.pop(0)  # Remove the oldest line if there are 5 already
+
+    new_line = ax.plot([current_point[0], new_point[0]], [current_point[1], new_point[1]], 'r-', lw=1, alpha=0.75)[0]
+    last_lines.append(new_line)
+
+    # Update line transparency
+    for i, line in enumerate(last_lines):
+        line.set_alpha((i + 1) / len(last_lines))  # Increase transparency for older lines
+
     current_point = new_point
-    return dots
+    return dots + last_lines
 
 # Setting up the plot
 fig, ax = plt.subplots()
 corner_points = plot_equilateral_triangle(ax, (0, 0), 2)
-current_point = (1, 0.5)  # Starting point
+start_point = (1, 0.5)  # Starting point
+current_point = start_point
 dots = []  # List to store dot objects
-dot_size = 3  # Dot size, can be adjusted
+last_lines = []  # List to store the last 5 line objects
+dot_size = 2  # Dot size, can be adjusted
+
+# Plot the starting point in red
+ax.plot(start_point[0], start_point[1], 'ro', markersize=dot_size)
 
 # Create and display the animation
-anim = FuncAnimation(fig, lambda frame: update(frame, dot_size), frames=np.arange(0, 100), interval=250, blit=True)
+anim = FuncAnimation(fig, lambda frame: update(frame, dot_size), frames=np.arange(0, 100), interval=25, blit=True)
 
 plt.show()
