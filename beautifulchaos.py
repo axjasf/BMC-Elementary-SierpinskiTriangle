@@ -32,25 +32,25 @@ def roll_dice_and_move(start_point, triangle_points):
     return new_point
 
 # Adjusted Animation function
-def update(frame):
-    global current_point
+def update(frame, dot_size):
+    global current_point, dots
     new_point = roll_dice_and_move(current_point, corner_points)
     
-    # Update line and point data
-    line.set_data([current_point[0], new_point[0]], [current_point[1], new_point[1]])
-    points.set_data([new_point[0]], [new_point[1]])  # Pass data as list or tuple
-    
+    # Create a new dot for each move
+    dot, = ax.plot(new_point[0], new_point[1], 'bo', markersize=dot_size)
+    dots.append(dot)
+
     current_point = new_point
-    return line, points
+    return dots
 
 # Setting up the plot
 fig, ax = plt.subplots()
 corner_points = plot_equilateral_triangle(ax, (0, 0), 2)
 current_point = (1, 0.5)  # Starting point
-line, = ax.plot([], [], 'r-', lw=1)
-points, = ax.plot([], [], 'bo')
+dots = []  # List to store dot objects
+dot_size = 3  # Dot size, can be adjusted
 
 # Create and display the animation
-anim = FuncAnimation(fig, update, frames=np.arange(0, 100), interval=250, blit=True)
+anim = FuncAnimation(fig, lambda frame: update(frame, dot_size), frames=np.arange(0, 100), interval=250, blit=True)
 
 plt.show()
