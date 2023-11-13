@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import random
+import time
+
+# Global variable to keep track of the last print time
+last_print_time = time.time()
 
 # Function to plot an equilateral triangle
 def plot_equilateral_triangle(ax, start_point, side_length):
@@ -33,23 +37,31 @@ def roll_dice_and_move(start_point, triangle_points):
 
 # Adjusted Animation function
 def update(frame, dot_size):
-    global current_point, dots, last_lines
+    global current_point, dots, last_lines, last_print_time
     new_point = roll_dice_and_move(current_point, corner_points)
     
     # Create a new dot for each move
     dot, = ax.plot(new_point[0], new_point[1], 'bo', markersize=dot_size)
     dots.append(dot)
 
-    # Create a new line for each move and update the last 5 lines
-    if len(last_lines) >= 5:
-        last_lines.pop(0)  # Remove the oldest line if there are 5 already
+    # Print the count of dots every 50 dots and the time since last print
+    if len(dots) % 50 == 0:
+        current_time = time.time()
+        elapsed_time = current_time - last_print_time
+        print(f"Dot count: {len(dots)}, Time since last print: {elapsed_time:.2f} seconds")
+        last_print_time = current_time
 
-    new_line = ax.plot([current_point[0], new_point[0]], [current_point[1], new_point[1]], 'r-', lw=1, alpha=0.75)[0]
+    # Create a new line for each move
+    new_line = ax.plot([current_point[0], new_point[0]], [current_point[1], new_point[1]], 'r-', lw=1)[0]
     last_lines.append(new_line)
 
     # Update line transparency
-    for i, line in enumerate(last_lines):
-        line.set_alpha((i + 1) / len(last_lines))  # Increase transparency for older lines
+    total_lines = len(last_lines)
+
+    # Remove the oldest line if there are more than 4
+    if len(last_lines) > 4:
+        old_line = last_lines.pop(0)
+        old_line.remove()  # Remove the line from the plot
 
     current_point = new_point
     return dots + last_lines
@@ -57,16 +69,16 @@ def update(frame, dot_size):
 # Setting up the plot
 fig, ax = plt.subplots()
 corner_points = plot_equilateral_triangle(ax, (0, 0), 2)
-start_point = (1, 0.5)  # Starting point
+start_point = (random.uniform(0,2), random.uniform(0,2))  # Starting point
 current_point = start_point
 dots = []  # List to store dot objects
-last_lines = []  # List to store the last 5 line objects
-dot_size = 2  # Dot size, can be adjusted
+last_lines = []  # List to store the last line objects
+dot_size = 1  # Dot size, can be adjusted
 
 # Plot the starting point in red
 ax.plot(start_point[0], start_point[1], 'ro', markersize=dot_size)
 
 # Create and display the animation
-anim = FuncAnimation(fig, lambda frame: update(frame, dot_size), frames=np.arange(0, 100), interval=25, blit=True)
+anim = FuncAnimation(fig, lambda frame: update(frame, dot_size), frames=np.arange(0, 100), interval=0, blit=True)
 
 plt.show()
