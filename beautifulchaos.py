@@ -35,7 +35,7 @@ def roll_dice_and_move(start_point, triangle_points):
     new_point = move_towards_point(start_point, target_point)
     return new_point
 
-# Adjusted Animation function
+# Animation function
 def update(frame, dot_size):
     global current_point, dots, last_lines, last_print_time
     new_point = roll_dice_and_move(current_point, corner_points)
