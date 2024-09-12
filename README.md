@@ -6,6 +6,8 @@ This project implements the Sierpinski triangle using the chaos game method, as 
 
 The Sierpinski triangle is a fractal pattern that emerges from a simple iterative process. This implementation uses NumPy for efficient calculations and Matplotlib for animated visualization.
 
+![Still image of the Sierpinski triangle animation](https://github.com/user-attachments/assets/910dbbd8-2b7b-4bf6-8ff8-31de1a1ff088)
+
 ## Requirements
 
 - Python 3.x
